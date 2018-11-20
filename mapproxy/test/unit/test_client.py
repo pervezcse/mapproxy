@@ -91,6 +91,16 @@ class TestHTTPClient(object):
         else:
             assert False, 'expected HTTPClientError'
 
+    def test_internal_error_hide_exception_url(self):
+        try:
+            with mock_httpd(TESTSERVER_ADDRESS, [({'path': '/'},
+                                                  {'status': '500', 'body': b''})]):
+                HTTPClient(hide_exception_url=True).open(TESTSERVER_URL + '/')
+        except HTTPClientError as e:
+            assert_re(e.args[0], r'HTTP Error: 500')
+        else:
+            assert False, 'expected HTTPClientError'
+
     @pytest.mark.online
     def test_https_untrusted_root(self):
         if not supports_ssl_default_context:
