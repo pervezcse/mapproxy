@@ -1,0 +1,179 @@
+# -------------------------------
+# MapProxy Multiple tile size configuration.
+# -------------------------------
+#
+#base: [mygrids.yaml, mycaches_sources.yaml]
+#Define mycoverage, to be used later
+parts:
+  coverages:
+    mycoverage: &mycoverage
+      bbox: [-180.0, -90.0, 180.0, 90.0]
+      srs: EPSG:4326
+    sa_coverage: &sa_coverage
+      bbox: [14, -35, 34, -21]
+      srs: EPSG:4326         
+    gautrain_coverage: &gautrain_coverage
+      bbox: [26, -27, 30, -25]
+      srs: EPSG:4326         
+      
+# WMTS-only layers must also be configured in layers section, as well as caches
+layers:
+    
+  - name: afrigis:ag_vblack.256
+    title: AfriGIS dark theme (256)
+    sources: [afrigis_ag_vblack_cache.256]
+  - name: afrigis:ag_vblack.512
+    title: AfriGIS dark theme (512)
+    sources: [afrigis_ag_vblack_cache.512]
+  - name: afrigis:ag_vblack.128
+    title: AfriGIS dark theme (128)
+    sources: [afrigis_ag_vblack_cache.128]
+
+ 
+
+  - name: afrigis:agmapkit_vovrnolabels.256
+    title: AfriGIS mapkit vovr - no labels (256)
+    sources: [afrigis_agmapkit_vovrnolabels_cache.256]
+  - name: afrigis:agmapkit_vovrnolabels.512
+    title: AfriGIS mapkit vovr - no labels (512)
+    sources: [afrigis_agmapkit_vovrnolabels_cache.512]
+  - name: afrigis:agmapkit_vovrnolabels.128
+    title: AfriGIS mapkit vovr - no labels (128)
+    sources: [afrigis_agmapkit_vovrnolabels_cache.128]
+
+  
+  
+  - name: afrigis:agmapkit_vovr_ivbase.256
+    title: AfriGIS mapkit vovr - over imagery (256)
+    sources: [afrigis_agmapkit_vovr_ivbase_cache.256]
+  - name: afrigis:agmapkit_vovr_ivbase.512
+    title: AfriGIS mapkit vovr - over imagery (512)
+    sources: [afrigis_agmapkit_vovr_ivbase_cache.512]
+  - name: afrigis:agmapkit_vovr_ivbase.128
+    title: AfriGIS mapkit vovr - over imagery (128)
+    sources: [afrigis_agmapkit_vovr_ivbase_cache.128]
+
+  
+
+# Only caches listed below are available in the WMTS service. Other layers configured above only available via WMS.    
+caches:
+
+  afrigis_ag_vblack_cache.256:
+    disable_storage: true
+    grids: [EPSG4326.256]
+    sources: [afrigis_ag_vblack_wmts] 
+  afrigis_ag_vblack_cache.512:
+    disable_storage: true
+    grids: [EPSG4326.512]
+    sources: [afrigis_ag_vblack_cache.256]
+  afrigis_ag_vblack_cache.128:
+    disable_storage: true
+    grids: [EPSG4326.128]
+    sources: [afrigis_ag_vblack_cache.256]
+
+ 
+
+  afrigis_agmapkit_vovrnolabels_cache.256:
+    disable_storage: true
+    grids: [EPSG4326.256]
+    sources: [afrigis_agmapkit_vovrnolabels_wmts] 
+  afrigis_agmapkit_vovrnolabels_cache.512:
+    disable_storage: true
+    grids: [EPSG4326.512]
+    sources: [afrigis_agmapkit_vovrnolabels_cache.256]
+  afrigis_agmapkit_vovrnolabels_cache.128:
+    disable_storage: true
+    grids: [EPSG4326.128]
+    sources: [afrigis_agmapkit_vovrnolabels_cache.256]
+
+    
+ 
+  afrigis_agmapkit_vovr_ivbase_cache.256:
+    disable_storage: false
+    cache_dir: /home/pervez/workspace/peter/cache_dir
+    grids: [EPSG4326.256]
+    sources: [afrigis_ag_sat_aesthetic_wmts, afrigis_agmapkit_vovrnolabels_wmts]  # order is from bottom layer to top
+  afrigis_agmapkit_vovr_ivbase_cache.512:
+    disable_storage: true
+    grids: [EPSG4326.512]
+    sources: [afrigis_agmapkit_vovr_ivbase_cache.256]
+  afrigis_agmapkit_vovr_ivbase_cache.128:
+    disable_storage: true
+    grids: [EPSG4326.128]
+    sources: [afrigis_agmapkit_vovr_ivbase_cache.256]
+
+ 
+#    #sources: [afrigis_ag_sat_aesthetic_wmts] To be used when GeoServer connects directly to DG via WMTS
+#    sources: [digitalglobe_aesthetic_cache.256]     # temporarily bypass GeoServer, go directly to DG via WMTS
+
+
+    
+sources:
+
+  afrigis_ag_vblack_wmts:
+    type: tile
+    url: https://mt1.afrigis.co.za:90/mapservice/gwc/service/wmts?LAYER=afrigis:ag_vblack&FORMAT=image/png&authkey=a5c76ced-8603-41bd-b51c-c1f0b1bce844&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=EPSG:4326&TILEMATRIX=EPSG:4326:%(z)s&TILEROW=%(y)s&TILECOL=%(x)s
+    grid: EPSG4326.256
+
+
+  afrigis_agmapkit_vovrnolabels_wmts:
+    type: tile
+    transparent: true
+    url: https://mt1.afrigis.co.za/mapservice/gwc/service/wmts?LAYER=afrigis:agmapkit_vovrnolabels&FORMAT=image/png&authkey=a5c76ced-8603-41bd-b51c-c1f0b1bce844&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=EPSG:4326&TILEMATRIX=EPSG:4326:%(z)s&TILEROW=%(y)s&TILECOL=%(x)s
+    grid: EPSG4326.256
+
+
+  afrigis_ag_sat_aesthetic_wmts:
+    type: tile
+    url: https://mt1.afrigis.co.za/mapservice/gwc/service/wmts?LAYER=afrigis:ag_sat_aesthetic&FORMAT=image/jpeg&authkey=89e8783b-b3ea-4cee-b2a1-d8fcdfd2ea61&SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&TILEMATRIXSET=EPSG:4326&TILEMATRIX=EPSG:4326:%(z)s&TILEROW=%(y)s&TILECOL=%(x)s
+    grid: EPSG4326.256
+    
+
+services:
+  demo:
+  wmts:
+  wms:
+    srs: ['EPSG:4326']
+    md:
+      title: AfriGIS MapProxy
+      abstract: Allows 128x128 and 512x512 tiles to be generated from 256x256 tiles as well as WMS maps to be built from WMTS tiles.     
+      
+grids:
+  EPSG4326.256:
+    base: GLOBAL_GEODETIC
+    origin: nw
+    min_res: 0.703125
+    #num_levels: 20
+  EPSG4326.512:
+    base: EPSG4326.256
+    tile_size: [512, 512]
+    min_res: 0.3515625
+  EPSG4326.128:
+    base: EPSG4326.256
+    tile_size: [128, 128]
+    min_res: 1.40625
+  EPSG4326:                     # allows for requests which do not specify the tile size, defaults to 256.  e.g. ag_land_cover 
+    base: EPSG4326.256
+  EPSG3857:
+    base: GLOBAL_WEBMERCATOR
+    #tile_size: I think we only need the default 256 x 256 tiles for EPSG:3857
+    
+globals:
+  image:
+    resampling_method: bicubic  # default
+    formats:
+      image/png:
+        mode: P
+        transparent: true
+#    paletted: false             # for 24 bit PNGs (not 8 bits per pixel)
+#    jpeg_quality: 90
+  cache:
+    meta_size: [1,1]        # for WMTS, we're only interested in this exact tile, no buffer, to minimise overhead.
+    meta_buffer: 0
+    # where to store the cached images
+    base_dir: '/opt/mapproxy/cache_data'
+    # where to store lockfiles
+    lock_dir: '/opt/mapproxy/cache_data/locks'
+  http:
+    hide_exception_url: true
+
